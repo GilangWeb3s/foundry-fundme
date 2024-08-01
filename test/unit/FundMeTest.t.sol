@@ -22,7 +22,7 @@ contract FundMeTest is Test {
     }
 
     function testOwnerIsSender() public view {
-        assertEq(fundMe.i_owner(), msg.sender);
+        assertEq(fundMe.getOwner(), msg.sender);
     }
 
     function testPriceVersion() public view {
@@ -43,15 +43,31 @@ contract FundMeTest is Test {
         vm.prank(USER);
         fundMe.fund{value: SEND_VALUE}();
 
-        address funder = fundMe.getFunders(0);
+        address funder = fundMe.getFunder(0);
         assertEq(funder, USER);
     }
-    function testOnlyOwnerCanWithdraw() public {
+
+    modifier funded() {
         vm.prank(USER);
         fundMe.fund{value: SEND_VALUE}();
+        _;    
+    }
 
+    function testOnlyOwnerCanWithdraw() public funded { 
         vm.prank(USER);
         vm.expectRevert();
         fundMe.withdraw();
+    }
+    function testWithdrawSingleFunder() public funded {
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
+        uint256 startingFundMeBalance = address(fundMe).balance;
+
+        vm.prank(fundMe.getOwner());
+        fundMe.withdraw();
+
+        uint256 endingOwnerBalance = fundMe.getOwner().balance;
+        uint256 endingFundMeBalance = address(fundMe).balance;
+        assertEq(endingFundMeBalance, 0); 
+        assertEq(startingOwnerBalance + startingFundMeBalance, endingOwnerBalance);
     }
 }
