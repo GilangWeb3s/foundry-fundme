@@ -61,7 +61,7 @@ contract FundMe {
     function getAddressToAmountFunded(address fundingAddress) external view returns (uint256) {
         return s_addressToAmountFunded[fundingAddress];
     }
-    function getFunder(uint256 index) external view returns (address) {
+    function getFunders(uint256 index) external view returns (address) {
         return s_funders[index];
     }
 }
