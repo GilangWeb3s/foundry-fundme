@@ -14,3 +14,6 @@ docs/
 .env
 
 .gas-snapshot
+
+.DS_Store
+zkout/
